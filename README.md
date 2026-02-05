@@ -1,0 +1,1 @@
+In this program i will be developing a battleships game from scratch using typescript.
