@@ -109,6 +109,27 @@ button:focus-visible {
 }
 
 .cell {
+  aspect-ratio: 1/1;
    border: 1px solid thistle
+}
 
+.destroyer.taken {
+  background-color: gold;
+  
+}
+
+.submarine.taken {
+  background-color: tomato;
+}
+
+.cruiser.taken {
+  background-color: green;
+}
+
+.battleship.taken {
+  background-color: blueviolet;
+}
+
+.carrier.taken {
+  background-color: sienna;
 }

@@ -45,7 +45,7 @@ class Ship {
   size: number;
   constructor(_name: string, _size: number) {
     this.name = _name;
-    this.size = size;
+    this.size = _size;
   }
 }
 
@@ -60,20 +60,28 @@ const addShipToGrid = (ship: Ship) => {
   // Get all cells on the computer board
   const cells = Array.from(computerBoard.getElementsByClassName("cell")) as HTMLElement[]
 
-  // Randomly choose horizontal or vertical
-  const horizontal = Math.random() < .5
-  // Pick a starting position that keeps the ship in bounds
-  const x = horizontal ? Math.floor(Math.random() * 10) : Math.floor(Math.random() * (10 - ship.size))
-  const y = horizontal ? Math.floor(Math.random() * (10 - ship.size)) : Math.floor(Math.random() * 10)
+  while(true) {
+    // Randomly choose horizontal or vertical
+    const horizontal = Math.random() < .5
+    // Pick a starting position that keeps the ship in bounds
+    const x = horizontal ? Math.floor(Math.random() * 10) : Math.floor(Math.random() * (10 - ship.size))
+    const y = horizontal ? Math.floor(Math.random() * (10 - ship.size)) : Math.floor(Math.random() * 10)
 
-  // Calculate the cell indexes the ship will occupy
-  const spots = new Array(ship.size).fill(-1).map((_, i) => {
-    if(horizontal) {
-      return x * 10 + y + i;
-    } else {
-      return x * 10 + y + i * 10;
+    // Calculate the cell indexes the ship will occupy
+    const spots = new Array(ship.size).fill(-1).map((_, i) => {
+      if(horizontal) {
+        return x * 10 + y + i;
+      } else {
+        return x * 10 + y + i * 10;
+      }
+    }).map(i => cells[i])
+    
+    // check if all cells are free then place ship
+    if (spots.every(spot => !spot.classList.contains('taken'))){
+      spots.forEach(spot => spot.classList.add('taken',ship.name))
+      break
     }
-  });
+  }
 }
 
 const allShips = [destroyer, submarine, cruiser, battleship, carrier];
