@@ -75,14 +75,44 @@ const addShipToGrid = (ship: Ship) => {
         return x * 10 + y + i * 10;
       }
     }).map(i => cells[i])
-    
+
     // check if all cells are free then place ship
     if (spots.every(spot => !spot.classList.contains('taken'))){
       spots.forEach(spot => spot.classList.add('taken',ship.name))
       break
     }
   }
-}
+};
 
 const allShips = [destroyer, submarine, cruiser, battleship, carrier];
-allShips.forEach(ship => addShipToGrid(ship))
+allShips.forEach(ship => addShipToGrid(ship));
+
+// Drag ships
+// When you click a ship
+const ondragstart = (e : MouseEvent) => {
+  console.log(e.target)
+};
+
+// When you drag over a cell
+const onDragOver = (e : DragEvent) => {
+  console.log(e.target)
+  e.preventDefault();
+};
+
+// When you drop on a cell
+const onDrop = (e : DragEvent) => {
+  console.log(e.target)
+};
+
+// Get all player cells
+const myCells = Array.from(playerBoard.getElementsByClassName("cell")) as HTMLElement[];
+// Add drag events to each cell
+myCells.forEach(cell => {
+  cell.addEventListener("dragover", onDragOver)
+  cell.addEventListener("drop", onDrop)
+})
+
+// Get all ships
+const ships = Array.from(document.querySelectorAll("#ships div")) as HTMLElement[];
+// Add click event to ships
+ships.forEach(ship => ship.addEventListener("mousedown", ondragstart))
