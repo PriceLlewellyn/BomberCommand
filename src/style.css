@@ -133,3 +133,7 @@ button:focus-visible {
 .carrier.taken {
   background-color: sienna;
 }
+
+.cell.highlight {
+  background-color: #ccc;
+}
