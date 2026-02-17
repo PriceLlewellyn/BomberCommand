@@ -56,6 +56,23 @@ const cruiser = new Ship("cruiser", 3);
 const battleship = new Ship("battleship", 4);
 const carrier = new Ship("carrier", 5);
 
+const getShipCells = (size: number, x: number, y: number, isFlipped: boolean, player: string) => {
+  const board = player === "computer" ? computerBoard : playerBoard
+
+  const cells = (Array.from(board.getElementsByClassName("cell"))) as HTMLElement[]
+
+  const spots = new Array(size).fill(-1).map((_, i) => {
+    if(isFlipped) {
+      return x * 10 + y + i * 10;
+    } else {
+      return x * 10 + y + i;
+    }
+  })
+  .map(i => cells[i])
+
+  return spots
+}
+
 const addShipToGrid = (ship: Ship) => {
 
   while(true) {
@@ -81,28 +98,14 @@ allShips.forEach(ship => addShipToGrid(ship));
 
 // Drag Ships
 
-const getShipCells = (size: number, x: number, y: number, isFlipped: boolean, player: string) => {
-  const board = player === "computer" ? computerBoard : playerBoard
-
-  const cells = (Array.from(board.getElementsByClassName("cell"))) as HTMLElement[]
-
-  const spots = new Array(size).fill(-1).map((_, i) => {
-    if(isFlipped) {
-      return x * 10 + y + i * 10;
-    } else {
-      return x * 10 + y + i;
-    }
-  })
-  .map(i => cells[i])
-
-  return spots
-}
-
 const checkValidTarget = (id:number) => {
-    const size = allShips.find(ship => ship.name === draggingShip)?.size || 0;
-    const x = Math.floor(id/ 10);
+    const size = allShips.find((ship) => ship.name === draggingShip)?.size || 0;
+    const x = Math.floor(id / 10);
     const y = id - x * 10;
 
+    const cells = getShipCells(size, x, y, isFlipped, "player");
+    if(cells.some(cell => cell && cell.classList.contains("taken")))
+      return false
 
     if (!isFlipped) {
       if (size + y > 10) return false;
@@ -122,10 +125,6 @@ const highlightCells = (id: number) => {
     validCells.forEach(cell => cell.classList.add("highlight"))
 }
 
-
-const ondragstart = (e : MouseEvent) => {
-  console.log(e.target)
-};
 
 let draggingShip = ''
 const onDragStart = (e: MouseEvent) => {
@@ -155,10 +154,10 @@ const onDrop = (e : DragEvent) => {
     if(cell.classList.contains('highlight')){
       cell.classList.remove('highlight')
       cell.classList.add('taken')
-      cell.classList.remove(draggingShip)
+      cell.classList.add(draggingShip)
     }
   })
-  draggableShips.find(ship => ship.classList.contains(draggingShip))?.remove;
+  draggableShips.find(ship => ship.classList.contains(draggingShip))?.remove
 };
 
 // Get all player cells
@@ -170,7 +169,7 @@ myCells.forEach(cell => {
   cell.addEventListener("drop", onDrop)
 })
 
-const draggableShips = Array.from(document.querySelectorAll("#ships div")) as HTMLElement[];
+const draggableShips = Array.from(document.querySelectorAll('#ships div')) as HTMLElement[];
 
 draggableShips.forEach((ship) => {
   ship.addEventListener("dragstart", onDragStart);
@@ -179,4 +178,4 @@ draggableShips.forEach((ship) => {
 // Get all ships
 const ships = Array.from(document.querySelectorAll("#ships div")) as HTMLElement[];
 // Add click event to ships
-ships.forEach(ship => ship.addEventListener("mousedown", ondragstart))
+ships.forEach(ship => ship.addEventListener("mousedown", onDragStart))
