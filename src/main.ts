@@ -56,23 +56,6 @@ const cruiser = new Ship("cruiser", 3);
 const battleship = new Ship("battleship", 4);
 const carrier = new Ship("carrier", 5);
 
-const getShipCells = (size: number, x: number, y: number, isFlipped: boolean, player: string) => {
-  const board = player === "computer" ? computerBoard : playerBoard
-
-  const cells = (Array.from(board.getElementsByClassName("cell"))) as HTMLElement[]
-
-  const spots = new Array(size).fill(-1).map((_, i) => {
-    if(isFlipped) {
-      return x * 10 + y + i * 10;
-    } else {
-      return x * 10 + y + i;
-    }
-  })
-  .map(i => cells[i])
-
-  return spots
-}
-
 const addShipToGrid = (ship: Ship) => {
 
   while(true) {
@@ -96,7 +79,24 @@ const addShipToGrid = (ship: Ship) => {
 const allShips = [destroyer, submarine, cruiser, battleship, carrier];
 allShips.forEach(ship => addShipToGrid(ship));
 
+// Drag Ships
 
+const getShipCells = (size: number, x: number, y: number, isFlipped: boolean, player: string) => {
+  const board = player === "computer" ? computerBoard : playerBoard
+
+  const cells = (Array.from(board.getElementsByClassName("cell"))) as HTMLElement[]
+
+  const spots = new Array(size).fill(-1).map((_, i) => {
+    if(isFlipped) {
+      return x * 10 + y + i * 10;
+    } else {
+      return x * 10 + y + i;
+    }
+  })
+  .map(i => cells[i])
+
+  return spots
+}
 
 const checkValidTarget = (id:number) => {
     const size = allShips.find(ship => ship.name === draggingShip)?.size || 0;
@@ -122,6 +122,7 @@ const highlightCells = (id: number) => {
     validCells.forEach(cell => cell.classList.add("highlight"))
 }
 
+
 const ondragstart = (e : MouseEvent) => {
   console.log(e.target)
 };
@@ -133,6 +134,7 @@ const onDragStart = (e: MouseEvent) => {
 
 // When you drag over a cell
 const onDragOver = (e : DragEvent) => {
+  e.preventDefault();
   const targetID = (e.target as HTMLElement).id;
   const id = Number(targetID.split("cell-")[1]);
   const isValidDrop = checkValidTarget(id);
@@ -141,13 +143,22 @@ const onDragOver = (e : DragEvent) => {
   }
 };
 
-const OnDragLeave = (E: DragEvent) => {
+const OnDragLeave = (e: DragEvent) => {
+  e.preventDefault();
   myCells.forEach ((cell)=> cell.classList.remove("highlight")) 
 }
 
 // When you drop on a cell
 const onDrop = (e : DragEvent) => {
-  console.log(e.target)
+  e.preventDefault();
+  myCells.forEach(cell => {
+    if(cell.classList.contains('highlight')){
+      cell.classList.remove('highlight')
+      cell.classList.add('taken')
+      cell.classList.remove(draggingShip)
+    }
+  })
+  draggableShips.find(ship => ship.classList.contains(draggingShip))?.remove;
 };
 
 // Get all player cells
@@ -158,6 +169,12 @@ myCells.forEach(cell => {
   cell.addEventListener("dragleave", OnDragLeave)
   cell.addEventListener("drop", onDrop)
 })
+
+const draggableShips = Array.from(document.querySelectorAll("#ships div")) as HTMLElement[];
+
+draggableShips.forEach((ship) => {
+  ship.addEventListener("dragstart", onDragStart);
+});
 
 // Get all ships
 const ships = Array.from(document.querySelectorAll("#ships div")) as HTMLElement[];
