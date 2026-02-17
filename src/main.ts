@@ -105,7 +105,7 @@ const checkValidTarget = (id:number) => {
 
     const cells = getShipCells(size, x, y, isFlipped, "player");
     if(cells.some(cell => cell && cell.classList.contains("taken")))
-      return false
+      return false;
 
     if (!isFlipped) {
       if (size + y > 10) return false;
@@ -150,6 +150,13 @@ const OnDragLeave = (e: DragEvent) => {
 // When you drop on a cell
 const onDrop = (e : DragEvent) => {
   e.preventDefault();
+
+  const highlightedCells = myCells.filter((cell) =>
+    cell.classList.contains("highlight")
+  );
+  
+  if (highlightedCells.length === 0) return;
+  
   myCells.forEach(cell => {
     if(cell.classList.contains('highlight')){
       cell.classList.remove('highlight')
@@ -157,7 +164,9 @@ const onDrop = (e : DragEvent) => {
       cell.classList.add(draggingShip)
     }
   })
-  draggableShips.find(ship => ship.classList.contains(draggingShip))?.remove
+  draggableShips
+    .find(ship => ship.classList.contains(draggingShip))
+    ?.remove();
 };
 
 // Get all player cells
