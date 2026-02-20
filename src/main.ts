@@ -34,10 +34,12 @@ const createGrid = (element: HTMLElement) => {
 // Create the player board
 const playerBoard = document.getElementById("player")!
 createGrid(playerBoard)
-
 // Create the computer board
 const computerBoard = document.getElementById("computer")!
 createGrid(computerBoard)
+// Get all player cells
+const myCells = Array.from(playerBoard.getElementsByClassName("cell")) as HTMLElement[];
+const computerCells = Array.from(computerBoard.getElementsByClassName("cell")) as HTMLElement[];
 
 
 class Ship {
@@ -184,8 +186,34 @@ const onDrop = (e : DragEvent) => {
     }
 };
 
-// Get all player cells
-const myCells = Array.from(playerBoard.getElementsByClassName("cell")) as HTMLElement[];
+let gameOver = false;
+let turn: "player"| "computer" = "computer"
+
+const handlePlayerClick = (e: MouseEvent) => {
+  if (gameOver)
+    return
+
+  if(turn === "player") {
+    const target = e.target as HTMLElement
+    if(target.classList.contains('hit') || target.classList.contains('miss')){
+      console.log("Try again");
+      return
+    }
+    if(target.classList.contains('taken')) {
+      target.classList.add('hit');
+    }
+    else{
+      target.classList.add('miss');
+    }
+  }
+}
+
+const startGame = () => {
+  turn = "player"
+  computerCells.forEach(cell => cell.addEventListener("click", handlePlayerClick))
+}
+document.getElementById("start")?.addEventListener("click", startGame)
+
 // Add drag events to each cell
 myCells.forEach(cell => {
   cell.addEventListener("dragover", onDragOver)
