@@ -9,6 +9,9 @@ const messages = {
   hit: "Boom, enemy ship is hit",
   miss: "Oops, nothing there", 
   "already hit": "This cell is already hit. Try a new target",
+  computer: "Computer thinking...",
+  "computer hit": "Computer hit your ship",
+  "computer miss": "computer missed"
 }
 
 const messageContainer = document.getElementById("message") as HTMLElement 
@@ -211,6 +214,36 @@ const onDrop = (e : DragEvent) => {
 
 let gameOver = false;
 let turn: "player"| "computer" = "computer"
+const playerHits:string[] = []
+const computerHits:string[] = []
+
+const computerTurn = () => {
+  changeMessage(messages.computer);
+
+  setTimeout(() => {
+      const validTargets = myCells.filter
+        ((cell) => 
+          !cell.classList.contains("hit") && !cell.classList.contains("miss")
+      );
+
+  const target = validTargets[Math.floor(Math.random() * validTargets.length)];
+
+  if (target.classList.contains("taken")) {
+    const shiptType = target.classList.toString().split("cell taken")[1]
+    computerHits.push(shiptType)
+    changeMessage(messages["computer hit"])
+    target.classList.add("hit");
+    console.log({computerHits})
+  } else {
+    changeMessage(messages["computer miss"])
+    target.classList.add("miss");
+  }
+  }, 1000);
+  setTimeout(() => {
+    changeMessage(messages['your turn']);
+    turn = "player";
+  }, 2000);
+};
 
 const handlePlayerClick = (e: MouseEvent) => {
   if (gameOver)
@@ -223,6 +256,8 @@ const handlePlayerClick = (e: MouseEvent) => {
       return
     }
     if(target.classList.contains('taken')) {
+      const shiptType = target.classList.toString().split("cell taken")[1]
+      playerHits.push(shiptType)
       changeMessage(messages.hit)
       target.classList.add('hit');
     }
@@ -230,7 +265,10 @@ const handlePlayerClick = (e: MouseEvent) => {
       changeMessage(messages.miss)
       target.classList.add('miss');
     }
+    turn = "computer"
+    setTimeout(computerTurn, 1000)
   }
+  console.log({playerHits});
 }
 
 const startGame = () => {
@@ -238,7 +276,7 @@ const startGame = () => {
   computerCells.forEach(cell => cell.addEventListener("click", handlePlayerClick)
   );
   document.getElementById("start")?.setAttribute("disabled", "true")
-  changeMessage(messages["your turn"])
+  changeMessage(messages["your turn"]);
 };
 document.getElementById("start")?.addEventListener("click", startGame)
 
