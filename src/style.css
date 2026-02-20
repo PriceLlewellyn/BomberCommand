@@ -153,3 +153,9 @@ button:disabled {
 .cell.highlight {
   background-color: #ccc;
 }
+
+#message {
+  font-size: 20;
+  color: darkblue;
+  transition: opacity .5s ease-in-out;
+}

@@ -1,5 +1,27 @@
 import './style.css'
 
+const messages = {
+  init: "Drag your ships to the map",
+  start: "Click start to proceed", 
+  "your turn": "Click on the cells of the enemy's map to find and destro all five of the enemy's ships",
+  won: "You Won!!!",
+  lost: "You lost, try again!!",
+  hit: "Boom, enemy ship is hit",
+  miss: "Oops, nothing there", 
+  "already hit": "This cell is already hit. Try a new target",
+}
+
+const messageContainer = document.getElementById("message") as HTMLElement 
+const changeMessage = (newText: string) => {
+  messageContainer.style.opacity = "0"
+
+  setTimeout(() => {
+    messageContainer.innerHTML = newText
+    messageContainer.style.opacity = "1"
+  }, 500)
+}
+changeMessage(messages.init)
+
 // Tracks whether ships are rotated
 let isFlipped = false;
 
@@ -182,7 +204,8 @@ const onDrop = (e : DragEvent) => {
     if(draggableShips.length === 0) {
       document.getElementById('rotate')?.removeEventListener("click", rotate)
       document.getElementById('rotate')?.setAttribute('disabled', 'true')
-      document.getElementById('start')?.removeAttribute('disabled')
+      document.getElementById('start')?.removeAttribute('disabled'),
+      changeMessage(messages.start);
     }
 };
 
@@ -196,13 +219,15 @@ const handlePlayerClick = (e: MouseEvent) => {
   if(turn === "player") {
     const target = e.target as HTMLElement
     if(target.classList.contains('hit') || target.classList.contains('miss')){
-      console.log("Try again");
+      changeMessage(messages["already hit"]);
       return
     }
     if(target.classList.contains('taken')) {
+      changeMessage(messages.hit)
       target.classList.add('hit');
     }
     else{
+      changeMessage(messages.miss)
       target.classList.add('miss');
     }
   }
@@ -210,8 +235,11 @@ const handlePlayerClick = (e: MouseEvent) => {
 
 const startGame = () => {
   turn = "player"
-  computerCells.forEach(cell => cell.addEventListener("click", handlePlayerClick))
-}
+  computerCells.forEach(cell => cell.addEventListener("click", handlePlayerClick)
+  );
+  document.getElementById("start")?.setAttribute("disabled", "true")
+  changeMessage(messages["your turn"])
+};
 document.getElementById("start")?.addEventListener("click", startGame)
 
 // Add drag events to each cell
