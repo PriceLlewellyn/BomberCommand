@@ -156,7 +156,16 @@ const onDrop = (e : DragEvent) => {
   );
   
   if (highlightedCells.length === 0) return;
-  
+
+  const index = draggableShips.findIndex(ship => ship.classList.contains(draggingShip))
+
+  if(index !== -1){
+    draggableShips[index].remove();
+    draggableShips.splice(index, 1);
+
+    console.log(draggableShips);
+  }
+
   myCells.forEach(cell => {
     if(cell.classList.contains('highlight')){
       cell.classList.remove('highlight')
@@ -167,6 +176,12 @@ const onDrop = (e : DragEvent) => {
   draggableShips
     .find(ship => ship.classList.contains(draggingShip))
     ?.remove();
+
+    if(draggableShips.length === 0) {
+      document.getElementById('rotate')?.removeEventListener("click", rotate)
+      document.getElementById('rotate')?.setAttribute('disabled', 'true')
+      document.getElementById('start')?.removeAttribute('disabled')
+    }
 };
 
 // Get all player cells
